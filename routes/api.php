@@ -114,6 +114,13 @@ Route::middleware(['auth:api', 'super_admin'])->group(function () {
     //notification for withdraw money
     Route::get('get-notify-withdraw', [NotificationController::class, 'WithdrawalNotify']);
 
+    //add category
+    Route::post('create-with-subcategory', [ServiceCategoryController::class, 'storeCategoryWithSubcategory']);
+    Route::post('update-with-subcategory/{id}', [ServiceCategoryController::class, 'UpdateCategoryWithSubcategory']);
+    Route::post('update-subcategory/{id}', [ServiceCategoryController::class, 'updateSubcategory']);
+    Route::delete('delete-subcategory/{id}', [ServiceCategoryController::class, 'deleteSubcategory']);
+    Route::delete('delete-category/{id}', [ServiceCategoryController::class, 'deleteServiceCategory']);
+
 });
 
 //provider route
@@ -147,12 +154,7 @@ Route::middleware(['auth:api', 'provider'])->group(function () {
     Route::get('withdraw-history', [WithdrawController::class, 'withdrawHistory']);
     Route::get('get-transaction', [TransactionController::class, 'TransactionforProvider']);
 
-    //add category
-    Route::post('create-with-subcategory', [ServiceCategoryController::class, 'storeCategoryWithSubcategory']);
-    Route::post('update-with-subcategory/{id}', [ServiceCategoryController::class, 'UpdateCategoryWithSubcategory']);
-    Route::post('update-subcategory/{id}', [ServiceCategoryController::class, 'updateSubcategory']);
-    Route::delete('delete-subcategory/{id}', [ServiceCategoryController::class, 'deleteSubcategory']);
-    Route::delete('delete-category/{id}', [ServiceCategoryController::class, 'deleteServiceCategory']);
+
 
     //route for service
     Route::post('create-service', [ServiceController::class, 'createServices']);

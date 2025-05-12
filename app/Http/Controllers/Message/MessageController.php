@@ -70,7 +70,7 @@ class MessageController extends Controller
 
             $query->where('sender_id', $receiver_id)->where('receiver_id', $sender_id);
 
-        })->orderBy('created_at', 'asc')->paginate();
+        })->orderBy('created_at', 'desc')->paginate();
 
         return response()->json(['status' => true, 'data' => $messages], 200);
     }

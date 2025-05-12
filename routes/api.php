@@ -131,7 +131,7 @@ Route::middleware(['auth:api', 'provider'])->group(function () {
     //schedule
     Route::post('add-schedule', [ScheduleController::class, 'addSchedule']);
     Route::post('update-schedule/{id}', [ScheduleController::class, 'updateSchedule']);
-    Route::get('list-schedule', [ScheduleController::class, 'getSchedule']);
+    // Route::get('list-schedule/{id}', [ScheduleController::class, 'getSchedule']);
 
     //experience
     Route::post('add-experience', [ExperienceController::class, 'addExperience']);
@@ -245,6 +245,7 @@ Route::get('get-all-category', [ServiceCategoryController::class, 'getCategory']
 Route::get('get-all-services', [ServiceController::class, 'getAllService']);
 Route::get('get-services-details/{id}', [ServiceController::class, 'servicesDetails']);
 Route::get('get-all-review', [ReviewController::class, 'reviewList']);
+ Route::get('list-schedule/{id}', [ScheduleController::class, 'getSchedule']);
 
 
 

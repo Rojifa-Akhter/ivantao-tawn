@@ -131,14 +131,29 @@ class AuthController extends Controller
     // verify email
     public function verify(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'otp' => 'required|numeric',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'otp' => 'required|numeric',
+        // ]);
 
-        if ($validator->fails()) {
+
+        // $user = User::where('otp', $request->otp)->first();
+
+
+
+  $validator = Validator::make($request->all(), [
+    'email' => 'required|email',
+    'otp'   => 'required|numeric',
+]);
+
+// dd($request->email, $request->otp);
+
+
+if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()], 422);
         }
-        $user = User::where('otp', $request->otp)->first();
+$user = User::where('email', $request->email)->where('otp', $request->otp)->first();
+
+
 
         if ($user) {
             $user->otp               = null;
@@ -175,6 +190,9 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if (! $user) {
             return response()->json(['status' => false, 'message' => 'Email or password is incorrect.'], 403);
+        }
+        if ($user->status == 'inactive') {
+            return response()->json(['status' => false, 'message' => 'Your account is inactive.'], 403);
         }
 
         if (! $token = Auth::guard('api')->attempt($credentials)) {

@@ -140,10 +140,17 @@ class ServiceController extends Controller
     public function getAllService(Request $request)
     {
         $sort = $request->input('sort');
+        $subCategoryId  = $request->input('sub_category_id');
+
 
         $service_list = Services::with(['provider:id,full_name,image', 'reviews:id,rating,user_id,service_id', 'reviews.user:id,full_name,image'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating');
+
+        //filter by subcategory
+        if ($subCategoryId){
+            $service_list = $service_list->where('service_sub_categories_id', $subCategoryId);
+        }
 
         // Apply sorting
         if ($sort == 'price_asc') {
@@ -192,7 +199,7 @@ class ServiceController extends Controller
             ->where('id', '!=', $service->id)
             ->limit(3)
             ->get();
-        //for formatted 
+        //for formatted
         $categoryName = $service->serviceCategory
         ? $service->serviceCategory->name
         : 'Unknown Category';

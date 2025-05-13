@@ -58,6 +58,7 @@ class AuthController extends Controller
             'contact'              => 'nullable|string|max:15',
             'role'                 => 'nullable|string|in:super_admin,provider,user',
             'image'                => 'nullable|image',
+            'document'             => 'nullable|file',
             'provider_description' => 'nullable|string',
             'uaepass_id'           => 'nullable|string|unique:users,uaepass_id',
         ]);
@@ -82,6 +83,14 @@ class AuthController extends Controller
             $new_name  = time() . '.' . $extension;
             $image->move(public_path('uploads/profile_images'), $new_name);
         }
+        //for document
+        $new_document = null;
+        if ($request->hasFile('document')) {
+            $document     = $request->file('document');
+            $extension    = $document->getClientOriginalExtension();
+            $new_document = time() . '.' . $extension;
+            $document->move(public_path('uploads/profile_documents'), $new_document);
+        }
 
         $otp            = rand(100000, 999999);
         $otp_expires_at = now()->addMinutes(10);
@@ -96,6 +105,7 @@ class AuthController extends Controller
             'password'             => Hash::make($request->password),
             'role'                 => $role,
             'image'                => $new_name,
+            'document'             => $new_document,
             'otp'                  => $otp,
             'otp_expires_at'       => $otp_expires_at,
             'status'               => 'inactive',
@@ -135,25 +145,19 @@ class AuthController extends Controller
         //     'otp' => 'required|numeric',
         // ]);
 
-
         // $user = User::where('otp', $request->otp)->first();
 
-
-
-  $validator = Validator::make($request->all(), [
-    'email' => 'required|email',
-    'otp'   => 'required|numeric',
-]);
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'otp'   => 'required|numeric',
+        ]);
 
 // dd($request->email, $request->otp);
 
-
-if ($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()], 422);
         }
-$user = User::where('email', $request->email)->where('otp', $request->otp)->first();
-
-
+        $user = User::where('email', $request->email)->where('otp', $request->otp)->first();
 
         if ($user) {
             $user->otp               = null;
@@ -164,8 +168,8 @@ $user = User::where('email', $request->email)->where('otp', $request->otp)->firs
             $token = JWTAuth::fromUser($user);
 
             return response()->json([
-                'status'  => true,
-                'message' => 'OTP verified successfully.',
+                'status'       => true,
+                'message'      => 'OTP verified successfully.',
                 'access_token' => $token,
             ], 200);
         }
@@ -201,10 +205,10 @@ $user = User::where('email', $request->email)->where('otp', $request->otp)->firs
 
         return response()->json([
             'status'           => true,
-            'message'=>'Login Successfully',
+            'message'          => 'Login Successfully',
             'access_token'     => $token,
             'token_type'       => 'bearer',
-            'user_information' => $user
+            'user_information' => $user,
         ], 200);
 
     }
@@ -283,7 +287,7 @@ $user = User::where('email', $request->email)->where('otp', $request->otp)->firs
             'contact'              => 'nullable|string|max:16',
             'password'             => 'nullable|string|min:6|confirmed',
             'image'                => 'nullable|file',
-            'about_yourself'                => 'nullable|string',
+            'about_yourself'       => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -296,7 +300,7 @@ $user = User::where('email', $request->email)->where('otp', $request->otp)->firs
         $user->address              = $validatedData['address'] ?? $user->address;
         $user->contact              = $validatedData['contact'] ?? $user->contact;
         $user->provider_description = $validatedData['provider_description'] ?? $user->provider_description;
-        $user->about_yourself = $validatedData['about_yourself'] ?? $user->about_yourself;
+        $user->about_yourself       = $validatedData['about_yourself'] ?? $user->about_yourself;
 
         if (! empty($validatedData['password'])) {
             $user->password = Hash::make($validatedData['password']);
@@ -337,16 +341,16 @@ $user = User::where('email', $request->email)->where('otp', $request->otp)->firs
 
         $request->validate([
             'current_password' => 'required|string|',
-            'new_password' => 'required|string|min:6|confirmed',
+            'new_password'     => 'required|string|min:6|confirmed',
         ]);
 
         $user = Auth::user();
 
         if (! $user) {
-            return response()->json(['status'=>false,'message' => 'User not authenticated.'], 401);
+            return response()->json(['status' => false, 'message' => 'User not authenticated.'], 401);
         }
-        if (!Hash::check($request->current_password, $user->password)) {
-            return response()->json(['status'=>false,'message' => 'Current password is incorrect.'],400);
+        if (! Hash::check($request->current_password, $user->password)) {
+            return response()->json(['status' => false, 'message' => 'Current password is incorrect.'], 400);
         }
         $user->password = Hash::make($request->new_password);
         $user->save();
@@ -395,7 +399,7 @@ $user = User::where('email', $request->email)->where('otp', $request->otp)->firs
 
         $user = User::where('email', $request->email)->first();
         if (! $user) {
-            return response()->json(['status'=>false,'message' => 'User not found.'], 200);
+            return response()->json(['status' => false, 'message' => 'User not found.'], 200);
         }
 
         $user->password = bcrypt($request->password);

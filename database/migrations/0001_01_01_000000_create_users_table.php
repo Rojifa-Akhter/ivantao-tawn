@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('contact')->nullable();
             $table->string('image')->nullable();
+            $table->string('document')->nullable();
             $table->string('uaepass_id')->nullable();
             $table->string('google_id')->nullable();
             $table->string('password');

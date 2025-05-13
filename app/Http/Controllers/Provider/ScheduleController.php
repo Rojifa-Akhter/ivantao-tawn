@@ -79,16 +79,39 @@ class ScheduleController extends Controller
     }
 
 
-    public function getSchedule()
-    {
-        $user      = Auth::user();
-        $schedules = Schedule::where('provider_id', $user->id)->get();
+    // public function getAllSchedule()
+    // {
+    //     $user      = Auth::user();
+    //     $schedules = Schedule::where('provider_id', $user->id)->get();
 
-        // Decode days array from JSON
-        $schedules->each(function ($schedule) {
-            $schedule->days = $schedule->days ? json_decode($schedule->days) : null;
-        });
+    //     // Decode days array from JSON
+    //     $schedules->each(function ($schedule) {
+    //         $schedule->days = $schedule->days ? json_decode($schedule->days) : null;
+    //     });
 
-        return response()->json(['satus'=>true,'schedules' => $schedules]);
+    //     return response()->json(['satus'=>true,'schedules' => $schedules]);
+
+
+    // }
+
+public function getSchedule(Request $request, $id)
+{
+    $schedule = Schedule::where('provider_id', $id)->first();
+
+    if (!$schedule) {
+        return response()->json([
+            'status' => false,
+            'message' => 'No schedule found for this provider.'
+        ], 404);
     }
+
+    // Decode days array from JSON
+    $schedule->days = $schedule->days ? json_decode($schedule->days) : null;
+
+    return response()->json([
+        'status' => true,
+        'data' => $schedule
+    ]);
 }
+}
+

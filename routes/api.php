@@ -240,5 +240,9 @@ Route::get('get-all-review', [ReviewController::class, 'reviewList']);
 
  Route::get('list-schedule/{id}', [ScheduleController::class, 'getSchedule']);
 
+ Route::get('services-with-category/{id}', [ServiceController::class, 'getServicesByCategory']);
+
+
+
 
 

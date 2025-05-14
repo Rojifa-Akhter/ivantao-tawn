@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Models\ServiceCategory;
 use App\Models\Services;
 use App\Models\ServiceSubCategory;
 use Illuminate\Http\Request;
@@ -139,16 +140,15 @@ class ServiceController extends Controller
     }
     public function getAllService(Request $request)
     {
-        $sort = $request->input('sort');
-        $subCategoryId  = $request->input('sub_category_id');
-
+        $sort          = $request->input('sort');
+        $subCategoryId = $request->input('sub_category_id');
 
         $service_list = Services::with(['provider:id,full_name,image', 'reviews:id,rating,user_id,service_id', 'reviews.user:id,full_name,image'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating');
 
         //filter by subcategory
-        if ($subCategoryId){
+        if ($subCategoryId) {
             $service_list = $service_list->where('service_sub_categories_id', $subCategoryId);
         }
 
@@ -223,4 +223,30 @@ class ServiceController extends Controller
             ],
         ], 200);
     }
+    //get all service under a category
+    public function getServicesByCategory($categoryId)
+    {
+        // Find the category first (optional - to validate existence)
+        $category = ServiceCategory::find($categoryId);
+
+        if (! $category) {
+            return response()->json(['status' => false, 'message' => 'Category Not Found'], 404);
+        }
+
+        // Get all services under this category
+        $services = Services::with('provider:id,full_name,image')
+            ->where('service_category_id', $categoryId)
+            ->get();
+
+        if ($services->isEmpty()) {
+            return response()->json(['status' => false, 'message' => 'No services found in this category'], 404);
+        }
+
+        return response()->json([
+            'status'   => true,
+            'category' => $category->name,
+            'data'     => $services,
+        ], 200);
+    }
+
 }

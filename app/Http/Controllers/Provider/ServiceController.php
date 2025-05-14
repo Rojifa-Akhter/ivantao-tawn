@@ -59,7 +59,6 @@ class ServiceController extends Controller
             'service_type'              => $request->service_type,
             'image'                     => $service_image,
         ]);
-        // return $services;
 
         $services->save();
         $services->load('provider:id,full_name,image', 'category:id,name,icon', 'subCategory:id,name,image');
@@ -70,13 +69,11 @@ class ServiceController extends Controller
             'data'    => $services,
         ], 201);
     }
+
     public function updateServices(Request $request, $id)
     {
         $services = Services::with('provider:id,full_name,image', 'category:id,name,icon', 'subCategory:id,name,image')->findOrFail($id);
 
-        if (! $services) {
-            return response()->json(['status' => false, 'message' => 'Service Not Found'], 422);
-        }
         $validator = Validator::make($request->all(), [
             'service_category_id'       => 'nullable|string|exists:service_categories,id',
             'service_sub_categories_id' => 'nullable|string|exists:service_sub_categories,id',
@@ -86,9 +83,11 @@ class ServiceController extends Controller
             'service_type'              => 'nullable|in:virtual,in-person',
             'image'                     => 'nullable|image',
         ]);
-        if (! $validator) {
+
+        if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()], 422);
         }
+
         $validatedData = $validator->validated();
 
         // Handle Image Upload
@@ -125,6 +124,7 @@ class ServiceController extends Controller
             'service' => $services,
         ]);
     }
+
     //delete service
     public function deleteService($id)
     {
@@ -138,10 +138,13 @@ class ServiceController extends Controller
 
         return response()->json(['message' => 'Service deleted successfully']);
     }
+
     public function getAllService(Request $request)
     {
-        $sort          = $request->input('sort');
-        $subCategoryId = $request->input('sub_category_id');
+
+        $sort = $request->input('sort');
+        $subCategoryId  = $request->input('sub_category_id');
+
 
         $service_list = Services::with(['provider:id,full_name,image', 'reviews:id,rating,user_id,service_id', 'reviews.user:id,full_name,image'])
             ->withCount('reviews')
@@ -250,3 +253,4 @@ class ServiceController extends Controller
     }
 
 }
+

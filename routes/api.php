@@ -32,7 +32,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 //auth route
-Route::group(['prefix' => 'auth'], function ($router) {
+    Route::group(['prefix' => 'auth'], function ($router) {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('verify', [AuthController::class, 'verify']);
     Route::post('login', [AuthController::class, 'login']);
@@ -183,7 +183,7 @@ Route::middleware(['auth:api', 'user.admin.provider'])->group(function () {
 
     //message routes
     Route::post('send-message', [MessageController::class, 'sendMessage']);
-    Route::get('get-message', [MessageController::class, 'getMessage']);
+    Route::post('get-message', [MessageController::class, 'getMessage']);
     Route::get('read-message', [MessageController::class, 'readMessage']);
     Route::get('search-user', [MessageController::class, 'searchUser']);
     Route::get('message-list', [MessageController::class, 'messageList']);
@@ -205,7 +205,7 @@ Route::middleware(['auth:api', 'user.provider'])->group(function () {
 
     //get all services list and details
     // Route::get('get-all-services', [ServiceController::class, 'getAllService']);
-    Route::get('get-services-details/{id}', [ServiceController::class, 'servicesDetails']);
+
 
     //job list
     Route::get('list-job', [CareerController::class, 'jobList']);
@@ -236,6 +236,7 @@ Route::get('get-all-subcategory', [ServiceCategoryController::class, 'getSubCate
 
 Route::get('get-all-services', [ServiceController::class, 'getAllService']);
 // Route::get('get-services-details/{id}', [ServiceController::class, 'servicesDetails']);
+    Route::get('get-services-details/{id}', [ServiceController::class, 'servicesDetails']);
 Route::get('get-all-review', [ReviewController::class, 'reviewList']);
 
  Route::get('list-schedule/{id}', [ScheduleController::class, 'getSchedule']);

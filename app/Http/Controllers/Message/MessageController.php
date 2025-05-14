@@ -90,7 +90,7 @@ class MessageController extends Controller
             $query->where('sender_id', $sender_id)->where('receiver_id', $receiver_id);
         })->orWhere(function ($query) use ($sender_id, $receiver_id) {
             $query->where('sender_id', $receiver_id)->where('receiver_id', $sender_id);
-        })->orderBy('created_at', 'desc')->paginate(20); // Added pagination limit
+        })->orderBy('created_at', 'asc')->paginate(20); // Added pagination limit
 
         return response()->json(['status' => true, 'data' => $messages], 200);
     }

@@ -219,7 +219,6 @@ Route::middleware(['auth:api', 'user.provider'])->group(function () {
 
     //contact get
     Route::get('contact-show', [ContactUsController::class, 'contactShow']);
-    Route::post('contact-message', [ContactWithAdminController::class, 'contactMessage']);
 
     //order
     Route::post('order-payment', [OrderController::class, 'createPaymentIntent']);
@@ -243,6 +242,7 @@ Route::get('get-all-review', [ReviewController::class, 'reviewList']);
 
  Route::get('services-with-category/{id}', [ServiceController::class, 'getServicesByCategory']);
 
+    Route::post('contact-message', [ContactWithAdminController::class, 'contactMessage']);
 
 
 
